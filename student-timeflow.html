@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>StudyLife — Student Time Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f4ff;
+  --surface:#ffffff;
+  --surface2:#f0ecff;
+  --text:#1e1b2e;
+  --muted:#7c7a8e;
+  --border:rgba(100,80,200,0.12);
+  --border2:rgba(100,80,200,0.22);
+
+  --class:#6c63ff;
+  --class-light:#eceaff;
+  --class-dark:#3d38b0;
+
+  --study:#ff6b9d;
+  --study-light:#ffeaf4;
+  --study-dark:#b03468;
+
+  --enjoy:#ffb347;
+  --enjoy-light:#fff4e0;
+  --enjoy-dark:#b07010;
+
+  --friend:#43d6a0;
+  --friend-light:#e0fff5;
+  --friend-dark:#1a8a61;
+
+  --font:  'Nunito', sans-serif;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --r:14px;
+  --r-lg:20px;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font);
+  font-size:15px;
+  line-height:1.5;
+  min-height:100vh;
+}
+
+/* ── NAV ── */
+nav{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:0 2rem;
+  height:62px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 16px rgba(108,99,255,0.06);
+}
+.logo{
+  font-family:var(--font-display);
+  font-size:1.5rem;
+  color:var(--class);
+  letter-spacing:-0.01em;
+}
+.logo span{color:var(--text);}
+.nav-right{display:flex;align-items:center;gap:1rem;}
+.day-badge{
+  background:var(--class-light);
+  color:var(--class);
+  font-weight:700;
+  font-size:13px;
+  padding:5px 14px;
+  border-radius:99px;
+}
+.greeting{font-size:14px;color:var(--muted);font-weight:600;}
+
+/* ── HERO ── */
+.hero{
+  max-width:900px;
+  margin:0 auto;
+  padding:3rem 2rem 1.5rem;
+  text-align:center;
+}
+.hero h1{
+  font-family:var(--font-display);
+  font-size:clamp(2rem,5vw,3rem);
+  line-height:1.1;
+  margin-bottom:.8rem;
+}
+.hero h1 em{font-style:italic;color:var(--class);}
+.hero p{color:var(--muted);font-size:1rem;max-width:480px;margin:0 auto 2rem;}
+
+/* ── TIME PIE ── */
+.pie-section{
+  max-width:900px;
+  margin:0 auto 2rem;
+  padding:0 1.5rem;
+}
+.pie-card{
+  background:var(--surface);
+  border-radius:var(--r-lg);
+  border:1px solid var(--border);
+  padding:2rem;
+  display:flex;
+  align-items:center;
+  gap:2.5rem;
+  box-shadow:0 4px 24px rgba(108,99,255,0.07);
+}
+.pie-wrap{position:relative;flex-shrink:0;}
+.pie-wrap svg{display:block;}
+.pie-center{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+}
+.pie-center .big{font-size:1.6rem;font-weight:900;color:var(--text);}
+.pie-center .small{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.pie-legend{flex:1;}
+.pie-legend h3{font-size:1.1rem;font-weight:800;margin-bottom:1.2rem;color:var(--text);}
+.legend-item{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:.9rem;
+}
+.legend-color{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.legend-name{font-weight:700;font-size:14px;flex:1;}
+.legend-bar-wrap{flex:2;background:var(--surface2);border-radius:99px;height:8px;overflow:hidden;}
+.legend-bar{height:100%;border-radius:99px;transition:width .8s ease;}
+.legend-hrs{font-size:13px;font-weight:700;min-width:36px;text-align:right;}
+.pie-sliders{margin-top:1.2rem;}
+.slider-row{display:flex;align-items:center;gap:8px;margin-bottom:.6rem;}
+.slider-row label{font-size:12px;font-weight:700;width:90px;flex-shrink:0;}
+input[type=range]{flex:1;accent-color:var(--class);height:4px;cursor:pointer;}
+.slider-val{font-size:12px;font-weight:800;min-width:32px;text-align:right;}
+
+/* ── ZONE CARDS ── */
+.zones{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:1rem;
+  max-width:900px;
+  margin:0 auto 2rem;
+  padding:0 1.5rem;
+}
+.zone{
+  background:var(--surface);
+  border-radius:var(--r-lg);
+  border:1px solid var(--border);
+  padding:1.4rem;
+  box-shadow:0 2px 12px rgba(0,0,0,0.04);
+  transition:box-shadow .2s;
+}
+.zone:hover{box-shadow:0 6px 28px rgba(0,0,0,0.09);}
+.zone-header{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:1rem;
+}
+.zone-icon{
+  width:40px;height:40px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.zone-title{
+  font-weight:800;font-size:1rem;
+}
+.zone-sub{font-size:12px;color:var(--muted);}
+.zone-badge{
+  margin-left:auto;
+  font-size:12px;font-weight:800;
+  padding:4px 12px;border-radius:99px;
+}
+
+/* task list inside zone */
+.zone-tasks{display:flex;flex-direction:column;gap:6px;margin-bottom:1rem;max-height:200px;overflow-y:auto;}
+.zone-tasks::-webkit-scrollbar{width:3px;}
+.zone-tasks::-webkit-scrollbar-thumb{border-radius:99px;}
+
+.zone-task{
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface2);
+  border-radius:10px;
+  padding:8px 12px;
+  font-size:13px;
+  animation:pop .2s ease;
+}
+@keyframes pop{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.zt-check{
+  width:18px;height:18px;border-radius:6px;border:2px solid;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all .2s;
+}
+.zt-check.checked::after{
+  content:'';width:9px;height:5px;
+  border-left:2px solid #fff;border-bottom:2px solid #fff;
+  transform:rotate(-45deg) translate(1px,-1px);
+}
+.zt-text{flex:1;font-weight:600;}
+.zt-text.done{text-decoration:line-through;opacity:.5;}
+.zt-time{font-size:11px;opacity:.6;font-weight:700;}
+.zt-del{
+  background:none;border:none;cursor:pointer;
+  font-size:16px;opacity:.4;transition:opacity .2s;
+  display:flex;align-items:center;
+}
+.zt-del:hover{opacity:.9;}
+
+.zone-add{
+  display:flex;gap:6px;
+}
+.zone-input{
+  flex:1;border:1.5px solid var(--border2);background:var(--surface2);
+  color:var(--text);font-family:var(--font);font-size:13px;
+  padding:7px 12px;border-radius:10px;outline:none;
+  transition:border-color .2s;
+  font-weight:600;
+}
+.zone-input:focus{border-color:var(--class);}
+.zone-input::placeholder{color:var(--muted);}
+.time-input{
+  width:70px;border:1.5px solid var(--border2);background:var(--surface2);
+  color:var(--text);font-family:var(--font);font-size:13px;
+  padding:7px 8px;border-radius:10px;outline:none;
+  font-weight:700;
+}
+.btn-zone-add{
+  width:34px;height:34px;border:none;border-radius:10px;
+  font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:opacity .2s;flex-shrink:0;font-weight:700;
+}
+.btn-zone-add:hover{opacity:.8;}
+
+/* zone color themes */
+.zone-class .zone-icon{background:var(--class-light);}
+.zone-class .zone-title{color:var(--class-dark);}
+.zone-class .zone-badge{background:var(--class-light);color:var(--class);}
+.zone-class .zt-check{border-color:var(--class);}
+.zone-class .zt-check.checked{background:var(--class);border-color:var(--class);}
+.zone-class .zone-input:focus{border-color:var(--class);}
+.zone-class .btn-zone-add{background:var(--class);color:#fff;}
+.zone-class .zone-tasks::-webkit-scrollbar-thumb{background:var(--class);}
+
+.zone-study .zone-icon{background:var(--study-light);}
+.zone-study .zone-title{color:var(--study-dark);}
+.zone-study .zone-badge{background:var(--study-light);color:var(--study);}
+.zone-study .zt-check{border-color:var(--study);}
+.zone-study .zt-check.checked{background:var(--study);border-color:var(--study);}
+.zone-study .zone-input:focus{border-color:var(--study);}
+.zone-study .btn-zone-add{background:var(--study);color:#fff;}
+.zone-study .zone-tasks::-webkit-scrollbar-thumb{background:var(--study);}
+
+.zone-enjoy .zone-icon{background:var(--enjoy-light);}
+.zone-enjoy .zone-title{color:var(--enjoy-dark);}
+.zone-enjoy .zone-badge{background:var(--enjoy-light);color:var(--enjoy-dark);}
+.zone-enjoy .zt-check{border-color:var(--enjoy);}
+.zone-enjoy .zt-check.checked{background:var(--enjoy);border-color:var(--enjoy);}
+.zone-enjoy .zone-input:focus{border-color:var(--enjoy);}
+.zone-enjoy .btn-zone-add{background:var(--enjoy);color:#fff;}
+.zone-enjoy .zone-tasks::-webkit-scrollbar-thumb{background:var(--enjoy);}
+
+.zone-friend .zone-icon{background:var(--friend-light);}
+.zone-friend .zone-title{color:var(--friend-dark);}
+.zone-friend .zone-badge{background:var(--friend-light);color:var(--friend-dark);}
+.zone-friend .zt-check{border-color:var(--friend);}
+.zone-friend .zt-check.checked{background:var(--friend);border-color:var(--friend);}
+.zone-friend .zone-input:focus{border-color:var(--friend);}
+.zone-friend .btn-zone-add{background:var(--friend);color:#fff;}
+.zone-friend .zone-tasks::-webkit-scrollbar-thumb{background:var(--friend);}
+
+/* ── WEEKLY PLANNER ── */
+.planner-section{max-width:900px;margin:0 auto 2rem;padding:0 1.5rem;}
+.section-title{font-weight:800;font-size:1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+.section-title span{font-size:18px;}
+.week-grid{
+  display:grid;grid-template-columns:repeat(7,1fr);gap:6px;
+}
+.day-col{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:.8rem .5rem;min-height:160px;}
+.day-col-head{font-size:11px;font-weight:800;color:var(--muted);text-align:center;margin-bottom:.6rem;letter-spacing:.06em;text-transform:uppercase;}
+.day-col.today{border-color:var(--class);box-shadow:0 0 0 2px rgba(108,99,255,0.15);}
+.day-col.today .day-col-head{color:var(--class);}
+.day-block{
+  border-radius:8px;padding:5px 6px;margin-bottom:4px;
+  font-size:11px;font-weight:700;cursor:pointer;
+  text-overflow:ellipsis;overflow:hidden;white-space:nowrap;
+  transition:opacity .2s;
+}
+.day-block:hover{opacity:.8;}
+.day-block.class-block{background:var(--class-light);color:var(--class-dark);}
+.day-block.study-block{background:var(--study-light);color:var(--study-dark);}
+.day-block.enjoy-block{background:var(--enjoy-light);color:var(--enjoy-dark);}
+.day-block.friend-block{background:var(--friend-light);color:var(--friend-dark);}
+
+/* ── MOOD CHECK ── */
+.mood-section{max-width:900px;margin:0 auto 2rem;padding:0 1.5rem;}
+.mood-card{
+  background:var(--surface);border-radius:var(--r-lg);
+  border:1px solid var(--border);padding:1.5rem 2rem;
+  display:flex;align-items:center;gap:2rem;
+  box-shadow:0 2px 12px rgba(0,0,0,0.04);
+}
+.mood-text{flex:1;}
+.mood-text h3{font-weight:800;font-size:1rem;margin-bottom:.3rem;}
+.mood-text p{font-size:13px;color:var(--muted);}
+.mood-emojis{display:flex;gap:10px;}
+.mood-btn{
+  font-size:1.8rem;background:var(--surface2);border:2px solid transparent;
+  border-radius:12px;width:52px;height:52px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.mood-btn:hover{transform:scale(1.15);}
+.mood-btn.selected{border-color:var(--class);background:var(--class-light);}
+.mood-quote{
+  background:var(--class-light);color:var(--class-dark);
+  border-radius:var(--r);padding:10px 16px;font-size:13px;font-weight:700;
+  font-style:italic;max-width:220px;text-align:center;flex-shrink:0;
+}
+
+/* ── TIMER ── */
+.timer-section{max-width:900px;margin:0 auto 2rem;padding:0 1.5rem;}
+.timer-card{
+  background:var(--surface);border-radius:var(--r-lg);
+  border:1px solid var(--border);padding:1.5rem 2rem;
+  display:flex;align-items:center;gap:2rem;
+  box-shadow:0 2px 12px rgba(0,0,0,0.04);
+}
+.timer-left{text-align:center;flex-shrink:0;}
+.timer-digits{
+  font-family:var(--font-display);
+  font-size:3rem;letter-spacing:-.02em;
+  color:var(--text);line-height:1;
+}
+.timer-mode-label{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:4px;}
+.timer-right{flex:1;}
+.timer-mode-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;}
+.t-tab{
+  background:var(--surface2);border:1.5px solid var(--border);
+  color:var(--muted);font-family:var(--font);font-size:12px;font-weight:700;
+  padding:5px 12px;border-radius:99px;cursor:pointer;transition:all .2s;
+}
+.t-tab.active{color:#fff;}
+.t-tab.class-tab.active{background:var(--class);border-color:var(--class);}
+.t-tab.study-tab.active{background:var(--study);border-color:var(--study);}
+.t-tab.enjoy-tab.active{background:var(--enjoy);border-color:var(--enjoy);}
+.t-tab.friend-tab.active{background:var(--friend);border-color:var(--friend);}
+.timer-controls{display:flex;gap:8px;align-items:center;}
+.btn-start{
+  font-family:var(--font);font-weight:800;font-size:14px;
+  padding:9px 24px;border-radius:99px;border:none;cursor:pointer;
+  background:var(--class);color:#fff;transition:opacity .2s;
+}
+.btn-start:hover{opacity:.85;}
+.btn-reset{
+  background:var(--surface2);border:1.5px solid var(--border2);
+  color:var(--muted);font-family:var(--font);font-weight:700;font-size:13px;
+  padding:9px 16px;border-radius:99px;cursor:pointer;transition:all .2s;
+}
+.btn-reset:hover{color:var(--text);}
+.timer-progress{margin-top:12px;}
+.t-prog-bar{height:6px;background:var(--surface2);border-radius:99px;overflow:hidden;}
+.t-prog-fill{height:100%;border-radius:99px;transition:width 1s linear,background .3s;}
+
+/* ── TIPS ── */
+.tips-section{max-width:900px;margin:0 auto 3rem;padding:0 1.5rem;}
+.tips-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.tip-card{
+  background:var(--surface);border-radius:var(--r);border:1px solid var(--border);
+  padding:1.2rem;text-align:center;
+}
+.tip-icon{font-size:1.8rem;margin-bottom:.6rem;}
+.tip-title{font-weight:800;font-size:13px;margin-bottom:.3rem;}
+.tip-body{font-size:12px;color:var(--muted);line-height:1.5;}
+
+footer{
+  text-align:center;padding:1.5rem;
+  color:var(--muted);font-size:13px;font-weight:600;
+  border-top:1px solid var(--border);
+}
+
+@media(max-width:700px){
+  .zones{grid-template-columns:1fr;}
+  .pie-card{flex-direction:column;}
+  .mood-card{flex-direction:column;text-align:center;}
+  .timer-card{flex-direction:column;}
+  .tips-grid{grid-template-columns:repeat(2,1fr);}
+  .week-grid{grid-template-columns:repeat(4,1fr);}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Study<span>Life</span></div>
+  <div class="nav-right">
+    <div class="greeting" id="greeting">Good morning! 👋</div>
+    <div class="day-badge" id="dayBadge">Monday</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Balance your life,<br><em>ace your year</em></h1>
+  <p>Manage class time, study sessions, fun, and friendships — all in one place built just for students.</p>
+</div>
+
+<!-- PIE CHART & SLIDERS -->
+<div class="pie-section">
+  <div class="pie-card">
+    <div class="pie-wrap">
+      <svg id="pieChart" width="180" height="180" viewBox="0 0 180 180"></svg>
+      <div class="pie-center">
+        <div class="big">16h</div>
+        <div class="small">Your Day</div>
+      </div>
+    </div>
+    <div class="pie-legend">
+      <h3>Set your daily balance</h3>
+      <div class="legend-item">
+        <div class="legend-color" style="background:var(--class)"></div>
+        <div class="legend-name" style="color:var(--class-dark)">📚 Classes</div>
+        <div class="legend-bar-wrap"><div class="legend-bar" id="barClass" style="background:var(--class)"></div></div>
+        <div class="legend-hrs" id="hrsClass" style="color:var(--class-dark)">6h</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background:var(--study)"></div>
+        <div class="legend-name" style="color:var(--study-dark)">✏️ Study</div>
+        <div class="legend-bar-wrap"><div class="legend-bar" id="barStudy" style="background:var(--study)"></div></div>
+        <div class="legend-hrs" id="hrsStudy" style="color:var(--study-dark)">4h</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background:var(--enjoy)"></div>
+        <div class="legend-name" style="color:var(--enjoy-dark)">🎮 Enjoyment</div>
+        <div class="legend-bar-wrap"><div class="legend-bar" id="barEnjoy" style="background:var(--enjoy)"></div></div>
+        <div class="legend-hrs" id="hrsEnjoy" style="color:var(--enjoy-dark)">3h</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background:var(--friend)"></div>
+        <div class="legend-name" style="color:var(--friend-dark)">🤝 Friends</div>
+        <div class="legend-bar-wrap"><div class="legend-bar" id="barFriend" style="background:var(--friend)"></div></div>
+        <div class="legend-hrs" id="hrsFriend" style="color:var(--friend-dark)">3h</div>
+      </div>
+      <div class="pie-sliders">
+        <div class="slider-row">
+          <label style="color:var(--class-dark)">📚 Classes</label>
+          <input type="range" id="slClass" min="1" max="10" value="6" style="accent-color:var(--class)"/>
+          <div class="slider-val" id="svClass" style="color:var(--class)">6h</div>
+        </div>
+        <div class="slider-row">
+          <label style="color:var(--study-dark)">✏️ Study</label>
+          <input type="range" id="slStudy" min="1" max="10" value="4" style="accent-color:var(--study)"/>
+          <div class="slider-val" id="svStudy" style="color:var(--study)">4h</div>
+        </div>
+        <div class="slider-row">
+          <label style="color:var(--enjoy-dark)">🎮 Enjoy</label>
+          <input type="range" id="slEnjoy" min="1" max="10" value="3" style="accent-color:var(--enjoy)"/>
+          <div class="slider-val" id="svEnjoy" style="color:var(--enjoy)">3h</div>
+        </div>
+        <div class="slider-row">
+          <label style="color:var(--friend-dark)">🤝 Friends</label>
+          <input type="range" id="slFriend" min="1" max="10" value="3" style="accent-color:var(--friend)"/>
+          <div class="slider-val" id="svFriend" style="color:var(--friend)">3h</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ZONE TASK CARDS -->
+<div class="zones">
+
+  <!-- CLASS -->
+  <div class="zone zone-class">
+    <div class="zone-header">
+      <div class="zone-icon">📚</div>
+      <div>
+        <div class="zone-title">Class Time</div>
+        <div class="zone-sub">Lectures, labs & attendance</div>
+      </div>
+      <div class="zone-badge" id="classBadge">0 / 0</div>
+    </div>
+    <div class="zone-tasks" id="taskList-class"></div>
+    <div class="zone-add">
+      <input class="zone-input" id="input-class" placeholder="Add class / subject…"/>
+      <input class="time-input" id="time-class" type="text" placeholder="9:00"/>
+      <button class="btn-zone-add" onclick="addTask('class')">+</button>
+    </div>
+  </div>
+
+  <!-- STUDY -->
+  <div class="zone zone-study">
+    <div class="zone-header">
+      <div class="zone-icon">✏️</div>
+      <div>
+        <div class="zone-title">Study Time</div>
+        <div class="zone-sub">Homework, revision & exams</div>
+      </div>
+      <div class="zone-badge" id="studyBadge">0 / 0</div>
+    </div>
+    <div class="zone-tasks" id="taskList-study"></div>
+    <div class="zone-add">
+      <input class="zone-input" id="input-study" placeholder="Add study task…"/>
+      <input class="time-input" id="time-study" type="text" placeholder="2h"/>
+      <button class="btn-zone-add" onclick="addTask('study')">+</button>
+    </div>
+  </div>
+
+  <!-- ENJOYMENT -->
+  <div class="zone zone-enjoy">
+    <div class="zone-header">
+      <div class="zone-icon">🎮</div>
+      <div>
+        <div class="zone-title">Enjoyment Time</div>
+        <div class="zone-sub">Hobbies, games & relaxation</div>
+      </div>
+      <div class="zone-badge" id="enjoyBadge">0 / 0</div>
+    </div>
+    <div class="zone-tasks" id="taskList-enjoy"></div>
+    <div class="zone-add">
+      <input class="zone-input" id="input-enjoy" placeholder="Add fun activity…"/>
+      <input class="time-input" id="time-enjoy" type="text" placeholder="1h"/>
+      <button class="btn-zone-add" onclick="addTask('enjoy')">+</button>
+    </div>
+  </div>
+
+  <!-- FRIENDS -->
+  <div class="zone zone-friend">
+    <div class="zone-header">
+      <div class="zone-icon">🤝</div>
+      <div>
+        <div class="zone-title">Friendship Time</div>
+        <div class="zone-sub">Social, hangouts & bonding</div>
+      </div>
+      <div class="zone-badge" id="friendBadge">0 / 0</div>
+    </div>
+    <div class="zone-tasks" id="taskList-friend"></div>
+    <div class="zone-add">
+      <input class="zone-input" id="input-friend" placeholder="Add social plan…"/>
+      <input class="time-input" id="time-friend" type="text" placeholder="3pm"/>
+      <button class="btn-zone-add" onclick="addTask('friend')">+</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- WEEKLY PLANNER -->
+<div class="planner-section">
+  <div class="section-title"><span>📅</span> Weekly Overview</div>
+  <div class="week-grid" id="weekGrid"></div>
+</div>
+
+<!-- MOOD CHECK -->
+<div class="mood-section">
+  <div class="mood-card">
+    <div class="mood-text">
+      <h3>How are you feeling today?</h3>
+      <p>Your mood affects how you should balance your time. Check in daily!</p>
+    </div>
+    <div class="mood-emojis">
+      <button class="mood-btn" data-mood="0" title="Terrible">😫</button>
+      <button class="mood-btn" data-mood="1" title="Meh">😕</button>
+      <button class="mood-btn" data-mood="2" title="Okay">😊</button>
+      <button class="mood-btn" data-mood="3" title="Great">😄</button>
+      <button class="mood-btn" data-mood="4" title="Amazing">🤩</button>
+    </div>
+    <div class="mood-quote" id="moodQuote">"Pick your mood to get a tip!"</div>
+  </div>
+</div>
+
+<!-- FOCUS TIMER -->
+<div class="timer-section">
+  <div class="timer-card">
+    <div class="timer-left">
+      <div class="timer-digits" id="timerDigits">25:00</div>
+      <div class="timer-mode-label" id="timerModeLabel">Select Mode</div>
+    </div>
+    <div class="timer-right">
+      <div class="timer-mode-tabs">
+        <button class="t-tab class-tab active" data-zone="class" data-mins="50">📚 Class (50m)</button>
+        <button class="t-tab study-tab" data-zone="study" data-mins="25">✏️ Study (25m)</button>
+        <button class="t-tab enjoy-tab" data-zone="enjoy" data-mins="30">🎮 Fun (30m)</button>
+        <button class="t-tab friend-tab" data-zone="friend" data-mins="60">🤝 Friends (60m)</button>
+      </div>
+      <div class="timer-controls">
+        <button class="btn-start" id="timerBtn">▶ Start</button>
+        <button class="btn-reset" id="timerReset">↺ Reset</button>
+      </div>
+      <div class="timer-progress">
+        <div class="t-prog-bar">
+          <div class="t-prog-fill" id="timerFill" style="width:0%;background:var(--class)"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TIPS -->
+<div class="tips-section">
+  <div class="section-title"><span>💡</span> Student Balance Tips</div>
+  <div class="tips-grid">
+    <div class="tip-card">
+      <div class="tip-icon">📚</div>
+      <div class="tip-title" style="color:var(--class-dark)">Class First</div>
+      <div class="tip-body">Prioritize attendance. Missing class creates 3x more study catch-up later.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">✏️</div>
+      <div class="tip-title" style="color:var(--study-dark)">Study Sprints</div>
+      <div class="tip-body">25-min focused sessions beat 2-hour unfocused marathons every time.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">🎮</div>
+      <div class="tip-title" style="color:var(--enjoy-dark)">Rest = Fuel</div>
+      <div class="tip-body">Enjoyment isn't laziness — it recharges your brain for better performance.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">🤝</div>
+      <div class="tip-title" style="color:var(--friend-dark)">Friends Matter</div>
+      <div class="tip-body">Students with strong social bonds perform 20% better academically on average.</div>
+    </div>
+  </div>
+</div>
+
+<footer>Made with 💜 for students everywhere · StudyLife</footer>
+
+<script>
+/* ── GREETING & DATE ── */
+const now = new Date();
+const hr = now.getHours();
+const greet = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
+document.getElementById('greeting').textContent = greet + '! 👋';
+const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+document.getElementById('dayBadge').textContent = days[now.getDay()];
+
+/* ── PIE CHART ── */
+const pieData = { class: 6, study: 4, enjoy: 3, friend: 3 };
+const pieColors = { class: '#6c63ff', study: '#ff6b9d', enjoy: '#ffb347', friend: '#43d6a0' };
+
+function drawPie() {
+  const total = Object.values(pieData).reduce((a, b) => a + b, 0);
+  const cx = 90, cy = 90, r = 78;
+  const circumference = 2 * Math.PI * r;
+  let svg = '';
+  let offset = 0;
+  const gap = 3;
+  const keys = ['class','study','enjoy','friend'];
+  keys.forEach(k => {
+    const frac = pieData[k] / total;
+    const dash = frac * circumference - gap;
+    const space = circumference - dash;
+    svg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${pieColors[k]}" stroke-width="18"
+      stroke-dasharray="${dash} ${space}" stroke-dashoffset="${-offset * circumference}" stroke-linecap="round"
+      style="transform:rotate(-90deg);transform-origin:${cx}px ${cy}px;transition:stroke-dasharray .5s ease"/>`;
+    offset += frac;
+  });
+  document.getElementById('pieChart').innerHTML = svg;
+
+  // update bars & labels
+  keys.forEach(k => {
+    const frac = pieData[k] / total;
+    const el = document.getElementById('bar' + k.charAt(0).toUpperCase() + k.slice(1));
+    if (el) el.style.width = Math.round(frac * 100) + '%';
+    const he = document.getElementById('hrs' + k.charAt(0).toUpperCase() + k.slice(1));
+    if (he) he.textContent = pieData[k] + 'h';
+    const se = document.getElementById('sv' + k.charAt(0).toUpperCase() + k.slice(1));
+    if (se) se.textContent = pieData[k] + 'h';
+  });
+  document.querySelector('.pie-center .big').textContent = total + 'h';
+}
+drawPie();
+
+['class','study','enjoy','friend'].forEach(k => {
+  const cap = k.charAt(0).toUpperCase() + k.slice(1);
+  const sl = document.getElementById('sl' + cap);
+  if (!sl) return;
+  sl.addEventListener('input', () => {
+    pieData[k] = parseInt(sl.value);
+    drawPie();
+  });
+});
+
+/* ── TASKS ── */
+const allTasks = { class: [], study: [], enjoy: [], friend: [] };
+function loadTasks() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('sl_tasks') || '{}');
+    Object.keys(allTasks).forEach(k => { allTasks[k] = saved[k] || []; });
+  } catch(e) {}
+}
+function saveTasks() {
+  localStorage.setItem('sl_tasks', JSON.stringify(allTasks));
+}
+loadTasks();
+
+function addTask(zone) {
+  const inp = document.getElementById('input-' + zone);
+  const timeInp = document.getElementById('time-' + zone);
+  const text = inp.value.trim();
+  if (!text) return;
+  allTasks[zone].push({ id: Date.now().toString(), text, time: timeInp.value.trim(), done: false });
+  inp.value = ''; timeInp.value = '';
+  saveTasks(); renderZone(zone);
+}
+// Enter key
+['class','study','enjoy','friend'].forEach(z => {
+  document.getElementById('input-' + z).addEventListener('keydown', e => { if (e.key === 'Enter') addTask(z); });
+});
+
+function renderZone(zone) {
+  const list = document.getElementById('taskList-' + zone);
+  list.innerHTML = '';
+  const tasks = allTasks[zone];
+  if (!tasks.length) {
+    list.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:13px;padding:1rem;font-weight:600;">No items yet — add one below!</div>`;
+  } else {
+    tasks.forEach(t => {
+      const div = document.createElement('div');
+      div.className = 'zone-task';
+      div.innerHTML = `
+        <div class="zt-check ${t.done ? 'checked' : ''}" data-id="${t.id}" data-zone="${zone}"></div>
+        <span class="zt-text ${t.done ? 'done' : ''}">${t.text}</span>
+        ${t.time ? `<span class="zt-time">⏰ ${t.time}</span>` : ''}
+        <button class="zt-del" data-id="${t.id}" data-zone="${zone}">×</button>
+      `;
+      list.appendChild(div);
+    });
+    list.querySelectorAll('.zt-check').forEach(el => {
+      el.addEventListener('click', () => {
+        const t = allTasks[el.dataset.zone].find(x => x.id === el.dataset.id);
+        if (t) { t.done = !t.done; saveTasks(); renderZone(el.dataset.zone); }
+      });
+    });
+    list.querySelectorAll('.zt-del').forEach(el => {
+      el.addEventListener('click', () => {
+        allTasks[el.dataset.zone] = allTasks[el.dataset.zone].filter(x => x.id !== el.dataset.id);
+        saveTasks(); renderZone(el.dataset.zone);
+      });
+    });
+  }
+  const done = tasks.filter(t => t.done).length;
+  const badge = document.getElementById(zone + 'Badge');
+  if (badge) badge.textContent = done + ' / ' + tasks.length;
+}
+['class','study','enjoy','friend'].forEach(z => renderZone(z));
+
+/* ── WEEKLY PLANNER ── */
+const weekDays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const todayIdx = (now.getDay() + 6) % 7;
+const weekSamples = [
+  [['class','Math 101'],['study','Calculus HW']],
+  [['class','Physics'],['enjoy','Gaming'],['friend','Lunch w/ Ali']],
+  [['class','English'],['study','Essay Draft'],['study','Read Ch.4']],
+  [['class','Chemistry'],['friend','Group project']],
+  [['class','History'],['enjoy','Movie night'],['study','Exam prep']],
+  [['enjoy','Football'],['friend','Park hangout'],['enjoy','Netflix']],
+  [['study','Weekly review'],['friend','Family time'],['enjoy','Chill']],
+];
+const wg = document.getElementById('weekGrid');
+weekDays.forEach((d, i) => {
+  const col = document.createElement('div');
+  col.className = 'day-col' + (i === todayIdx ? ' today' : '');
+  col.innerHTML = `<div class="day-col-head">${d}</div>`;
+  (weekSamples[i] || []).forEach(([type, label]) => {
+    const b = document.createElement('div');
+    b.className = `day-block ${type}-block`;
+    b.textContent = label;
+    b.title = label;
+    col.appendChild(b);
+  });
+  wg.appendChild(col);
+});
+
+/* ── MOOD ── */
+const moodQuotes = [
+  ["Take it easy today — light study, more rest.", "😫"],
+  ["Short tasks only. A walk might help too!", "😕"],
+  ["Solid day ahead! Balance your time well.", "😊"],
+  ["Great energy — tackle your hardest study first!", "😄"],
+  ["You're unstoppable! Set a big goal today. 🚀", "🤩"],
+];
+document.querySelectorAll('.mood-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    const m = parseInt(btn.dataset.mood);
+    document.getElementById('moodQuote').textContent = '"' + moodQuotes[m][0] + '"';
+  });
+});
+
+/* ── TIMER ── */
+let timerSecs = 25 * 60, timerTotal = 25 * 60, timerRunning = false, timerInterval = null;
+let activeZone = 'class';
+const zoneColors = { class: 'var(--class)', study: 'var(--study)', enjoy: 'var(--enjoy)', friend: 'var(--friend)' };
+const zoneLabels = { class: '📚 Class Session', study: '✏️ Study Session', enjoy: '🎮 Fun Time', friend: '🤝 Friend Time' };
+
+document.querySelectorAll('.t-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.t-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    activeZone = tab.dataset.zone;
+    timerSecs = parseInt(tab.dataset.mins) * 60;
+    timerTotal = timerSecs;
+    stopTimer();
+    document.getElementById('timerBtn').textContent = '▶ Start';
+    updateTimerDisplay();
+  });
+});
+
+function updateTimerDisplay() {
+  const m = String(Math.floor(timerSecs / 60)).padStart(2, '0');
+  const s = String(timerSecs % 60).padStart(2, '0');
+  document.getElementById('timerDigits').textContent = m + ':' + s;
+  document.getElementById('timerModeLabel').textContent = zoneLabels[activeZone] || '';
+  const pct = 100 - Math.round((timerSecs / timerTotal) * 100);
+  document.getElementById('timerFill').style.width = pct + '%';
+  document.getElementById('timerFill').style.background = zoneColors[activeZone];
+  document.querySelector('.btn-start').style.background = zoneColors[activeZone].replace('var(','').replace(')','');
+}
+updateTimerDisplay();
+
+document.getElementById('timerBtn').addEventListener('click', () => {
+  if (timerRunning) {
+    stopTimer();
+    document.getElementById('timerBtn').textContent = '▶ Start';
+  } else {
+    timerRunning = true;
+    document.getElementById('timerBtn').textContent = '⏸ Pause';
+    timerInterval = setInterval(() => {
+      timerSecs--;
+      if (timerSecs <= 0) {
+        timerSecs = 0;
+        stopTimer();
+        document.getElementById('timerBtn').textContent = '▶ Start';
+      }
+      updateTimerDisplay();
+    }, 1000);
+  }
+});
+document.getElementById('timerReset').addEventListener('click', () => {
+  stopTimer();
+  timerSecs = timerTotal;
+  document.getElementById('timerBtn').textContent = '▶ Start';
+  updateTimerDisplay();
+});
+function stopTimer() {
+  clearInterval(timerInterval); timerRunning = false;
+}
+</script>
+</body>
+</html>
